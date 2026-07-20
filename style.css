@@ -194,11 +194,14 @@ img {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 999; /* Elevado para garantir que o flip-book não sobreponha */
+  z-index: 90;
   opacity: 0.8;
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-  touch-action: manipulation; /* Previne o delay de 300ms de double-tap no mobile */
-  -webkit-tap-highlight-color: transparent;
+  /* Garante resposta imediata ao toque (sem o delay de 300ms para
+     double-tap-to-zoom) e que o botão nunca fique "atrás" de outra
+     camada visual/tocável do livro. */
+  touch-action: manipulation;
+  pointer-events: auto;
+  transition: transform 220ms ease, opacity 220ms ease, box-shadow 220ms ease, background 220ms ease;
 }
  
 .nav-btn:hover,
@@ -1198,41 +1201,6 @@ body.dragging * {
   .modal-wrapper { border-radius: 14px; width: min(95vw, 100%); }
   .modal-close-btn { width: 44px; height: 44px; }
   .info-value { font-size: clamp(1.5rem, 6vw, 2rem); }
-}
-
-@media (max-width: 767px) {
-  /* Os botões de navegação viram um controle inferior elegante */
-  .nav-btn {
-    top: auto;
-    bottom: calc(24px + env(safe-area-inset-bottom));
-    width: 54px;
-    height: 54px;
-    opacity: 0.95;
-    background: rgba(21, 25, 29, 0.85);
-    border: 1px solid rgba(242, 201, 76, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    /* Removemos o translateY, mas mantemos uma transição base */
-    transform: translateY(0) scale(1);
-  }
-
-  .nav-btn-left { 
-    left: calc(50% - 65px); 
-  }
-  
-  .nav-btn-right { 
-    right: calc(50% - 65px); 
-  }
-
-  .nav-btn:active {
-    transform: translateY(2px) scale(0.92); /* Efeito de 'squash' premium ao tocar */
-    background: rgba(242, 201, 76, 0.25);
-  }
-
-  /* Ajuste do viewport para dar espaço ao dock inferior */
-  .album-viewport {
-    padding: 80px 10px 90px; /* Mais espaço embaixo para não chocar com os botões */
-    min-height: calc(100dvh - 20px);
-  }
 }
  
 /* ---------- MOBILE (361px – 480px): grade de figurinhas ainda em 2 colunas

@@ -9,9 +9,6 @@ let audioContext = null;
  
 // ===================================================
 // DETECÇÃO DE DISPOSITIVO (mouse real vs. touch)
-// Efeitos como o cursor customizado e o tilt 3D só fazem sentido com um
-// ponteiro fino (mouse/trackpad). Em touch eles são caros em performance
-// e não correspondem a nenhuma interação real do usuário.
 // ===================================================
 const hasFinePointer = () => window.matchMedia("(pointer: fine)").matches && window.matchMedia("(hover: hover)").matches;
  
@@ -34,12 +31,10 @@ function playHoverSound() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         
-        // Onda triangular descendo rapidamente dá a sensação de um "click" digital
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(800, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.03);
         
-        // Fade in/out extremamente rápido (30 milissegundos)
         gain.gain.setValueAtTime(0, audioCtx.currentTime);
         gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 0.005);
         gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.03);
@@ -77,7 +72,6 @@ function playTechClickSound() {
  
 function playPaperTurnSound() {
     if (isMuted) return;
- 
     try {
         const audioCtx = getAudioContext();
         if (!audioCtx) return;
@@ -218,22 +212,15 @@ function openArchiveModal(figurinha) {
     
     playTechClickSound();
  
-    // GSAP Modal Transição
-    gsap.fromTo(".modal-backdrop", 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 0.4 }
-    );
-    
+    gsap.fromTo(".modal-backdrop", { opacity: 0 }, { opacity: 1, duration: 0.4 });
     gsap.fromTo(".modal-wrapper", 
         { scale: 0.8, opacity: 0, rotationX: 10 }, 
         { scale: 1, opacity: 1, rotationX: 0, duration: 0.6, ease: "back.out(1.5)" }
     );
- 
     gsap.fromTo(".modal-image",
         { clipPath: "inset(0 100% 0 0)" }, 
         { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.inOut", delay: 0.2 }
     );
- 
     gsap.fromTo(".info-group",
         { opacity: 0, x: -20 },
         { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, delay: 0.4 }
@@ -244,23 +231,17 @@ function closeArchiveModal() {
     const modal = document.getElementById("archive-modal");
     if (!modal) return;
     
-    // Animação rápida de saída com GSAP
-    gsap.to(".modal-wrapper", {
-        scale: 0.9, opacity: 0, duration: 0.3, ease: "power2.in"
-    });
+    gsap.to(".modal-wrapper", { scale: 0.9, opacity: 0, duration: 0.3, ease: "power2.in" });
     gsap.to(".modal-backdrop", {
         opacity: 0, duration: 0.3, onComplete: () => {
             modal.classList.add("hidden");
             modal.setAttribute("aria-hidden", "true");
-            // Resetar estilos inline gerados pelo GSAP
             gsap.set([".modal-wrapper", ".modal-backdrop", ".modal-image", ".info-group"], {clearProps: "all"});
         }
     });
 }
  
 const applyTiltEffect = () => {
-    // Em touch/tablet não há hover real: o tilt 3D é desabilitado por completo
-    // (evita custo de reflow por toque e uma transform "presa" após o tap).
     if (!hasFinePointer()) return;
  
     document.querySelectorAll(".sticker-slot").forEach(slot => {
@@ -324,19 +305,11 @@ async function preencherFigurinhas() {
             img.src = `${API_BASE_URL}${figurinha.imagem_url}`;
             img.alt = figurinha.nome;
             img.className = "sticker-img";
-            // As primeiras figurinhas (capa/página 1) carregam prioritariamente;
-            // o restante do arquivo é carregado sob demanda, o que pesa bem
-            // menos em conexões móveis.
-            img.loading = id <= 5 ? "eager" : "lazy";
+            // img.loading = id <= 5 ? "eager" : "lazy";
             img.decoding = "async";
  
-            img.onload = () => {
-                slot.classList.add("slot-filled");
-            };
- 
-            img.onerror = () => {
-                console.warn(`Imagem não encontrada para: ${figurinha.nome}`);
-            };
+            img.onload = () => { slot.classList.add("slot-filled"); };
+            img.onerror = () => { console.warn(`Imagem não encontrada para: ${figurinha.nome}`); };
  
             slot.insertBefore(img, slot.firstChild);
  
@@ -350,9 +323,6 @@ async function preencherFigurinhas() {
         });
  
         updateCollectionDashboard(totalSlots, normalizedFigurinhas.length);
-        console.log(`✅ ${normalizedFigurinhas.length} figurinhas carregadas da API.`);
-        
-        // Aplica o efeito Tilt 3D após o carregamento
         applyTiltEffect();
     } catch (erro) {
         console.warn("⚠️  Não foi possível conectar à API do backend:", erro.message);
@@ -377,21 +347,15 @@ document.addEventListener("DOMContentLoaded", () => {
     updateLocalTimeDisplay();
     window.setInterval(updateLocalTimeDisplay, 1000);
  
-    // Registra Plugin do GSAP
     if (typeof gsap !== "undefined" && typeof TextPlugin !== "undefined") {
         gsap.registerPlugin(TextPlugin);
     }
  
-    // Livro começa recuado/invisível: a entrada dele é coreografada junto com
-    // o fim do intro (crossfade), em vez de simplesmente "aparecer" via display:block.
-    // Só escondemos o livro se o intro + GSAP realmente forem trazê-lo de volta —
-    // caso contrário ele fica visível normalmente (fallback seguro).
     const introWillAnimateBook = Boolean(bookElement && introScreen && typeof gsap !== "undefined");
     if (introWillAnimateBook) {
         gsap.set(bookElement, { opacity: 0, scale: 0.93, rotationX: 7, transformOrigin: "50% 100%" });
     }
  
-    // GSAP Intro Animada (Substituindo o antigo setTimeout)
     let tlIntro = null;
     if (introScreen && typeof gsap !== "undefined") {
         tlIntro = gsap.timeline({
@@ -401,61 +365,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
  
-        tlIntro.to(".intro-line", {
-            opacity: 1,
-            duration: 0.1,
-            stagger: 0.3
-        })
-        .to(".intro-progress-bar", {
-            width: "100%",
-            duration: 0.8,
-            ease: "power2.inOut"
-        }, "-=0.2")
-        .to(".intro-terminal", {
-            scale: 1.05,
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.in"
-        }, "+=0.3")
-        .to(introScreen, {
-            opacity: 0,
-            backdropFilter: "blur(0px)",
-            duration: 0.6
-        }, "<")
-        .to(bookElement, {
-            opacity: 1,
-            scale: 1,
-            rotationX: 0,
-            duration: 1,
-            ease: "power3.out"
-        }, "<0.1")
-        .fromTo(".bat-signal-glow", {
-            opacity: 1,
-            scale: 1
-        }, {
-            opacity: 1.8,
-            scale: 1.5,
-            duration: 0.35,
-            ease: "power2.out",
-            yoyo: true,
-            repeat: 1
-        }, "<");
+        tlIntro.to(".intro-line", { opacity: 1, duration: 0.1, stagger: 0.3 })
+        .to(".intro-progress-bar", { width: "100%", duration: 0.8, ease: "power2.inOut" }, "-=0.2")
+        .to(".intro-terminal", { scale: 1.05, opacity: 0, duration: 0.4, ease: "power2.in" }, "+=0.3")
+        .to(introScreen, { opacity: 0, backdropFilter: "blur(0px)", duration: 0.6 }, "<")
+        .to(bookElement, { opacity: 1, scale: 1, rotationX: 0, duration: 1, ease: "power3.out" }, "<0.1")
+        .fromTo(".bat-signal-glow", { opacity: 1, scale: 1 }, { opacity: 1.8, scale: 1.5, duration: 0.35, ease: "power2.out", yoyo: true, repeat: 1 }, "<");
     } else if (introScreen) {
-        // Fallback caso o GSAP não carregue
         window.setTimeout(() => {
             introScreen.classList.add("hidden");
             introScreen.setAttribute("aria-hidden", "true");
         }, 1700);
     }
  
-    
-
-  // ==========================================
-    // FÍSICA AWWWARDS: Batman Cursor Smooth Follow (Lerp)
-    // Só faz sentido — e só roda — em dispositivos com mouse real.
-    // Em touch isso seria um loop de rAF e listeners de mousemove
-    // rodando à toa (custo de performance) para um cursor que nunca aparece
-    // (o CSS já esconde .cursor-batman em pointer:coarse/hover:none).
+    // ==========================================
+    // FÍSICA AWWWARDS: Cursor e Botões Magnéticos
     // ==========================================
     const cursorBatman = document.getElementById("cursor-batman");
  
@@ -465,37 +389,24 @@ document.addEventListener("DOMContentLoaded", () => {
         let cursorRotation = 0;
         let isCursorPressed = false;
  
-        // Tamanho do cursor definido no CSS para o cálculo de centralização (50x25)
         const cursorWidth = 50;
         const cursorHeight = 25;
         const centerXOffset = cursorWidth / 2;
         const centerYOffset = cursorHeight / 2;
  
-        // Atualiza a posição bruta do mouse
-        window.addEventListener("mousemove", (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
- 
-        // Squash de clique: dá peso físico ao símbolo quando o botão é pressionado
+        window.addEventListener("mousemove", (e) => { mouseX = e.clientX; mouseY = e.clientY; });
         window.addEventListener("mousedown", () => { isCursorPressed = true; });
         window.addEventListener("mouseup", () => { isCursorPressed = false; });
         window.addEventListener("blur", () => { isCursorPressed = false; });
  
-        // Função de renderização para Lerp (Linear Interpolation)
         function renderCursor() {
-            // Velocidade de rastreio (0.18 é um bom equilíbrio entre fluidez e atraso)
             const followSpeed = 0.18;
- 
             const prevX = smoothedX;
             const prevY = smoothedY;
  
-            // Aplica o Lerp: nova posição = atual + (destino - atual) * velocidade
             smoothedX += (mouseX - smoothedX) * followSpeed;
             smoothedY += (mouseY - smoothedY) * followSpeed;
  
-            // Rotação direcional: o morcego "inclina" na direção do movimento,
-            // como uma asa fazendo uma curva, sempre suavizado (lerp) para não tremer
             const velX = smoothedX - prevX;
             const velY = smoothedY - prevY;
             const speed = Math.hypot(velX, velY);
@@ -507,32 +418,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursorRotation += (0 - cursorRotation) * 0.1;
             }
  
-            // Escala reage ao hover (substituindo a regra CSS, que o transform inline sobrescrevia)
-            // e ao squash de clique, dando sensação de peso físico
             const hoverScale = document.body.classList.contains("hover-btn") || document.body.classList.contains("hover-slot") ? 1.4 : 1;
             const squashY = isCursorPressed ? 0.72 : 1;
  
-            // Aplica as coordenadas suaves, subtraindo o offset para que a ponta do morcego
-            // fique exatamente no centro das coordenadas do mouse
             cursorBatman.style.transform = `translate(${smoothedX - centerXOffset}px, ${smoothedY - centerYOffset}px) rotate(${cursorRotation.toFixed(2)}deg) scale(${hoverScale}, ${(hoverScale * squashY).toFixed(2)})`;
- 
             requestAnimationFrame(renderCursor);
         }
-        renderCursor(); // Inicia o motor do cursor
+        renderCursor(); 
     }
  
-    // --- Mantenha a lógica magnética e hover dos botões abaixo aqui ---
     const magneticBtns = document.querySelectorAll(".nav-btn, .sound-btn");
-    // ... [Mantenha todo o código de mousemove/mouseleave/mouseenter dos magneticBtns original] ...
+    
+    if (hasFinePointer()) {
+        magneticBtns.forEach(btn => {
+            btn.addEventListener("mousemove", (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.4, ease: "power2.out" });
+                document.body.classList.add("hover-btn");
+            });
+
+            btn.addEventListener("mouseleave", () => {
+                gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
+                document.body.classList.remove("hover-btn");
+            });
+            
+            btn.addEventListener("mouseenter", playHoverSound);
+        });
+    }
  
     // ==========================================
     // EVENTOS DO MODAL E INTERFACE
     // ==========================================
     if (modalClose) {
-        modalClose.addEventListener("click", () => {
-            playTechClickSound();
-            closeArchiveModal();
-        });
+        modalClose.addEventListener("click", () => { playTechClickSound(); closeArchiveModal(); });
     }
  
     if (modal) {
@@ -545,9 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
  
     document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && modal && !modal.classList.contains("hidden")) {
-            closeArchiveModal();
-        }
+        if (event.key === "Escape" && modal && !modal.classList.contains("hidden")) closeArchiveModal();
     });
  
     soundToggle.addEventListener("click", () => {
@@ -566,8 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
             width: 550,
             height: 800,
             size: "stretch",
-            // minWidth reduzido para caber em telas bem estreitas (320px) mesmo
-            // descontando as margens laterais do .album-viewport.
             minWidth: 260,
             maxWidth: 1000,
             minHeight: 380,
@@ -575,11 +492,8 @@ document.addEventListener("DOMContentLoaded", () => {
             drawShadow: true,
             maxShadowOpacity: 0.4,
             showCover: true,
-            // Alterna automaticamente para uma página por vez quando a área
-            // disponível não comporta um álbum aberto (fica true por padrão,
-            // mas mantemos explícito por clareza da intenção responsiva).
             usePortrait: true,
-            mobileScrollSupport: true,
+            mobileScrollSupport: false, // Desligado para evitar conflito
             useMouseEvents: false,
             showPageCorners: false,
             disableFlipByClick: true,
@@ -625,11 +539,12 @@ document.addEventListener("DOMContentLoaded", () => {
  
             if (distance > 10 && !dragStarted) {
                 dragStarted = true;
-                let cornerX;
-                let cornerY;
+                
                 const centerY = bookRect.top + bookRect.height / 2;
-                cornerY = startY < centerY ? 0 : bookRect.height;
-                cornerX = activeDragPage.index % 2 === 0 ? bookRect.width : 0;
+                const cornerY = startY < centerY ? 0 : bookRect.height;
+                
+                // Baseado na direção do dedo para puxar o canto correto (swipe fixado para frente e trás)
+                const cornerX = deltaX > 0 ? 0 : bookRect.width; 
  
                 document.body.classList.add("dragging");
                 pageFlip.startUserTouch({ x: cornerX, y: cornerY });
@@ -659,9 +574,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.addEventListener("touchmove", (event) => {
             if (event.touches.length > 0) {
                 const touch = event.touches[0];
-                // Uma vez que o gesto foi reconhecido como virada de página,
-                // bloqueia o scroll vertical do navegador para que o swipe
-                // não "brigue" com a rolagem da tela.
                 if (dragStarted) event.preventDefault();
                 handleMove(touch.clientX, touch.clientY, true);
             }
@@ -680,21 +592,31 @@ document.addEventListener("DOMContentLoaded", () => {
         preencherFigurinhas();
  
         pageFlip.on("changeState", (event) => {
-            if (event.data === "flipping") {
-                playPaperTurnSound();
-            }
+            if (event.data === "flipping") playPaperTurnSound();
         });
+ 
+        const updateNavButtons = (currentPageIndex) => {
+            const totalPages = pageFlip.getPageCount();
+            btnPrev.classList.toggle("hidden", currentPageIndex === 0);
+            btnNext.classList.toggle("hidden", currentPageIndex === totalPages - 1);
+        };
  
         pageFlip.on("flip", (event) => {
-            const currentPage = event.data;
-            const totalPages = pageFlip.getPageCount();
- 
-            btnPrev.classList.toggle("hidden", currentPage === 0);
-            btnNext.classList.toggle("hidden", currentPage === totalPages - 1);
+            updateNavButtons(event.data);
         });
  
-        btnPrev.addEventListener("click", () => pageFlip.flipPrev());
-        btnNext.addEventListener("click", () => pageFlip.flipNext());
+        // Vínculo dos botões com stopPropagation para previnir conflitos
+        const bindNavButton = (button, action) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation(); // Impede que o clique vaze pro livro
+                action();
+                playTechClickSound();
+            });
+        };
+ 
+        bindNavButton(btnPrev, () => pageFlip.flipPrev());
+        bindNavButton(btnNext, () => pageFlip.flipNext());
  
         document.addEventListener("keydown", (event) => {
             if (event.key === "ArrowLeft") pageFlip.flipPrev();
