@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
+ 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Gotham Archives - A Coleção Classificada</title>
     <!-- Google Fonts for Gothic, technical, and digital interface look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +13,7 @@
      <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
     <link rel="stylesheet" href="style.css">
 </head>
-
+ 
 <body>
     <!-- Custom Batman Symbol Cursor -->
     <div id="cursor-batman" class="cursor-batman" aria-hidden="true">
@@ -34,7 +34,7 @@
             <p class="intro-line text-white delay-4 uppercase font-bold tracking-widest">ACESSO CONCEDIDO</p>
         </div>
     </div>
-
+ 
     <!-- Sound Control -->
     <button id="sound-toggle" class="sound-btn" aria-label="Alternar som">
         <svg class="sound-icon-on" viewBox="0 0 24 24" width="22" height="22">
@@ -46,7 +46,7 @@
                 d="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.5C15.58,18 14.83,18.4 14,18.71V20.77C15.38,20.44 16.63,19.78 17.7,18.9L20.73,21.93L22,20.66L4.27,3M14,3.23V5.29C14.73,5.5 15.43,5.83 16.07,6.26L14.59,7.74C14.41,7.65 14.21,7.58 14,7.54V9.54L19,14.54C19,13.7 19,12.85 19,12C19,7.72 16,4.14 14,3.23M16.5,12C16.5,11.2 16.1,10.5 15.5,10.05L14,11.55V12.45L15.46,13.9C15.48,13.28 16.5,12.62 16.5,12Z" />
         </svg>
     </button>
-
+ 
     <!-- Batcave Mainframe Dashboard / Collection Progress -->
     <div id="progress-dashboard" class="dashboard-header">
         <div class="db-title-group">
@@ -61,7 +61,7 @@
             <span id="progress-percentage" class="db-percentage">0%</span>
         </div>
     </div>
-
+ 
     <!-- Navigation Arrows -->
     <button id="btn-prev" class="nav-btn nav-btn-left" aria-label="Página Anterior">
         <svg viewBox="0 0 24 24" width="36" height="36">
@@ -73,11 +73,11 @@
             <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
         </svg>
     </button>
-
+ 
     <!-- Album Container -->
     <div class="album-viewport" id="album-viewport">
         <div class="flip-book" id="book">
-
+ 
             <!-- PAGINA 0: CAPA -->
             <div class="page page-cover" data-density="hard">
                 <div class="page-content cover-content">
@@ -94,7 +94,7 @@
                             <div class="bat-ring ring-1"></div>
                             <div class="bat-ring ring-2"></div>
                         </div>
-
+ 
                         <h1 class="cover-title">GOTHAM</h1>
                         <h2 class="cover-subtitle">ARCHIVES</h2>
                         
@@ -107,7 +107,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 1: A FAMÍLIA BAT -->
             <div class="page page-left">
                 <div class="page-content">
@@ -149,7 +149,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 2: GALERIA DOS ROGUES -->
             <div class="page page-right">
                 <div class="page-content">
@@ -191,7 +191,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 3: ARQUIVOS ARKHAM -->
             <div class="page page-left">
                 <div class="page-content">
@@ -233,7 +233,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 4: LOCAIS DE GOTHAM -->
             <div class="page page-right">
                 <div class="page-content">
@@ -275,7 +275,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 5: BAT-GEAR - PARTE 1 -->
             <div class="page page-left">
                 <div class="page-content">
@@ -317,7 +317,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 6: BAT-Friends -->
             <div class="page page-right">
                 <div class="page-content">
@@ -359,7 +359,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- PAGINA 7: CONTRACAPA -->
             <div class="page page-cover-back" data-density="hard">
                 <div class="page-content cover-back-content">
@@ -396,10 +396,10 @@
                     </div>
                 </div>
             </div>
-
+ 
         </div>
     </div>
-
+ 
     <!-- Batsignal / Batcave Confidential Dossier Modal -->
     <div id="archive-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-backdrop"></div>
@@ -458,5 +458,5 @@
     <!-- Logic -->
     <script src="app.js"></script>
 </body>
-
+ 
 </html>

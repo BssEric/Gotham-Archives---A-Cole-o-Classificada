@@ -10,19 +10,20 @@
   --bat-yellow: #f2c94c;
   --shadow: rgba(0, 0, 0, 0.55);
 }
-
+ 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
+ 
 html {
   scroll-behavior: smooth;
 }
-
+ 
 body {
   min-height: 100vh;
+  min-height: 100svh; /* corrige a barra de endereço móvel "pulando" a altura */
   font-family: 'Inter', sans-serif;
   color: var(--text);
   background:
@@ -35,8 +36,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Rede de segurança: se o conteúdo for mais alto que a tela (telas muito baixas),
+     permite rolagem vertical em vez de cortar o livro */
+  overflow-y: auto;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
-
+ 
 body::before {
   content: "";
   position: fixed;
@@ -49,7 +55,7 @@ body::before {
   pointer-events: none;
   opacity: 0.65;
 }
-
+ 
 body::after {
   content: "";
   position: fixed;
@@ -67,14 +73,14 @@ body::after {
 /* ===================================================
    BATMAN SYMBOL CURSOR STYLE & STATES
    =================================================== */
-
+ 
 /* Ocultar cursor padrão apenas em dispositivos com mouse real */
 @media (pointer: fine) {
   body, button, .sticker-slot, a, .flip-book {
     cursor: none !important;
   }
 }
-
+ 
 /* Container do Símbolo */
 .cursor-batman {
   position: fixed;
@@ -100,15 +106,22 @@ body::after {
   filter: drop-shadow(0 0 6px rgba(242, 201, 76, 0.5));
   will-change: transform;
 }
-
+ 
 .cursor-batman svg {
   width: 100%;
   height: 100%;
   display: block;
 }
-
+ 
+/* Em touch/tablet não existe mouse real: o símbolo nunca deve aparecer parado no canto */
+@media (pointer: coarse), (hover: none) {
+  .cursor-batman {
+    display: none !important;
+  }
+}
+ 
 /* === ESTADOS DO CURSOR === */
-
+ 
 /* Quando passa sobre botões magnéticos ou dossiers */
 body.hover-btn .cursor-batman,
 body.hover-slot .cursor-batman {
@@ -117,7 +130,7 @@ body.hover-slot .cursor-batman {
   /* Escala agora é controlada via JS a cada frame (junto com rotação e squash de clique),
      já que o transform inline do cursor sobrescreve qualquer transform definido aqui */
 }
-
+ 
 /* Preparação para GSAP (Removendo animações nativas antigas) */
 .intro-line {
   opacity: 0; /* Começa invisível para o GSAP animar */
@@ -129,16 +142,16 @@ body.hover-slot .cursor-batman {
 .modal-wrapper {
   transform-origin: center;
 }
-
+ 
 button,
 img {
   -webkit-tap-highlight-color: transparent;
 }
-
+ 
 .hidden {
   display: none !important;
 }
-
+ 
 .sound-btn,
 .nav-btn,
 .modal-close-btn {
@@ -147,11 +160,11 @@ img {
   background: rgba(21, 25, 29, 0.72);
   backdrop-filter: blur(10px);
 }
-
+ 
 .sound-btn {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: calc(20px + env(safe-area-inset-top));
+  right: calc(20px + env(safe-area-inset-right));
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -162,14 +175,14 @@ img {
   z-index: 100;
   transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
 }
-
+ 
 .sound-btn:hover,
 .sound-btn:focus-visible {
   background: rgba(242, 201, 76, 0.18);
   box-shadow: 0 0 20px rgba(242, 201, 76, 0.25);
   transform: scale(1.05);
 }
-
+ 
 .nav-btn {
   position: fixed;
   top: 50%;
@@ -185,7 +198,7 @@ img {
   opacity: 0.8;
   transition: transform 220ms ease, opacity 220ms ease, box-shadow 220ms ease, background 220ms ease;
 }
-
+ 
 .nav-btn:hover,
 .nav-btn:focus-visible {
   opacity: 1;
@@ -193,13 +206,13 @@ img {
   box-shadow: 0 0 20px rgba(242, 201, 76, 0.35);
   transform: translateY(-50%) scale(1.04);
 }
-
-.nav-btn-left { left: 24px; }
-.nav-btn-right { right: 24px; }
-
+ 
+.nav-btn-left { left: calc(24px + env(safe-area-inset-left)); }
+.nav-btn-right { right: calc(24px + env(safe-area-inset-right)); }
+ 
 .dashboard-header {
   position: fixed;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   width: min(760px, calc(100vw - 32px));
@@ -215,18 +228,18 @@ img {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(12px);
 }
-
+ 
 .db-title-group,
 .db-progress-group {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .db-title-group {
   min-width: 280px;
 }
-
+ 
 .db-dot {
   width: 11px;
   height: 11px;
@@ -234,7 +247,7 @@ img {
   background: var(--bat-yellow);
   box-shadow: 0 0 14px rgba(242, 201, 76, 0.9);
 }
-
+ 
 .db-title,
 .db-status-text,
 .db-percentage,
@@ -254,7 +267,7 @@ img {
 .cover-footer-text {
   font-family: 'Space Grotesk', sans-serif;
 }
-
+ 
 .db-title,
 .db-status-text,
 .db-percentage {
@@ -262,12 +275,12 @@ img {
   font-size: 0.72rem;
   letter-spacing: 1.5px;
 }
-
+ 
 .db-progress-group {
   flex: 1;
   justify-content: flex-end;
 }
-
+ 
 .db-progress-bar-container {
   width: min(240px, 34vw);
   height: 8px;
@@ -275,7 +288,7 @@ img {
   border-radius: 999px;
   overflow: hidden;
 }
-
+ 
 .db-progress-bar {
   height: 100%;
   width: 0;
@@ -284,18 +297,19 @@ img {
   box-shadow: 0 0 18px rgba(242, 201, 76, 0.55);
   transition: width 320ms ease;
 }
-
+ 
 .album-viewport {
   position: relative;
   width: min(1080px, 100vw);
-  height: min(780px, 100vh - 150px);
+  height: min(780px, calc(100vh - 150px));
+  height: min(780px, calc(100dvh - 150px));
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 1500px;
   padding: 92px 0 24px;
 }
-
+ 
 .flip-book {
   box-shadow:
     0 50px 120px rgba(0, 0, 0, 0.75),
@@ -304,7 +318,7 @@ img {
   overflow: hidden;
   display: none;
 }
-
+ 
 .page {
   width: 550px;
   height: 800px;
@@ -318,15 +332,15 @@ img {
   -ms-user-select: none;
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
-
+ 
 .page:active { cursor: grabbing; }
-
+ 
 body.dragging,
 body.dragging * {
   cursor: grabbing !important;
   user-select: none !important;
 }
-
+ 
 .page-content {
   width: 100%;
   height: 100%;
@@ -337,7 +351,7 @@ body.dragging * {
   gap: 16px;
   overflow: hidden;
 }
-
+ 
 .page-content::before {
   content: "";
   position: absolute;
@@ -347,7 +361,7 @@ body.dragging * {
     linear-gradient(125deg, rgba(0,0,0,0.02), transparent 35%, rgba(242, 201, 76, 0.03));
   pointer-events: none;
 }
-
+ 
 .page:nth-child(even):not(:last-child) .page-content::after,
 .page:nth-child(odd):not(:first-child) .page-content::after {
   content: "";
@@ -358,17 +372,17 @@ body.dragging * {
   pointer-events: none;
   z-index: 3;
 }
-
+ 
 .page:nth-child(even):not(:last-child) .page-content::after {
   right: 0;
   background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.18) 100%);
 }
-
+ 
 .page:nth-child(odd):not(:first-child) .page-content::after {
   left: 0;
   background: linear-gradient(to left, transparent 0%, rgba(0,0,0,0.18) 100%);
 }
-
+ 
 .page-header {
   padding-bottom: 14px;
   border-bottom: 1px solid rgba(0,0,0,0.08);
@@ -378,7 +392,7 @@ body.dragging * {
   position: relative;
   z-index: 2;
 }
-
+ 
 .tech-badge {
   align-self: flex-start;
   padding: 6px 12px;
@@ -390,26 +404,26 @@ body.dragging * {
   color: #0b0d0f;
   background: linear-gradient(135deg, rgba(242, 201, 76, 0.95), rgba(201, 154, 46, 0.98));
 }
-
+ 
 .badge-batfamily { background: linear-gradient(135deg, #f4d678, #c99a2e); }
 .badge-rogues { background: linear-gradient(135deg, #d59d3d, #9c5f18); }
 .badge-arkham { background: linear-gradient(135deg, #8b6f45, #514126); }
 .badge-locations { background: linear-gradient(135deg, #7b8792, #3d4b56); }
 .badge-gear { background: linear-gradient(135deg, #c9be8a, #8f7b3f); }
-
+ 
 .page-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 2rem;
   letter-spacing: 1.2px;
   color: #0d1215;
 }
-
+ 
 .page-description {
   font-size: 0.92rem;
   line-height: 1.5;
   color: #48515a;
 }
-
+ 
 .stickers-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -418,7 +432,7 @@ body.dragging * {
   position: relative;
   z-index: 2;
 }
-
+ 
 .sticker-slot {
   position: relative;
   min-height: 134px;
@@ -439,7 +453,7 @@ body.dragging * {
   transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease, background 240ms ease;
   outline: none;
 }
-
+ 
 .sticker-slot::before {
   content: "";
   position: absolute;
@@ -448,7 +462,7 @@ body.dragging * {
   opacity: 0;
   transition: opacity 220ms ease;
 }
-
+ 
 .sticker-slot:hover,
 .sticker-slot:focus-visible,
 .sticker-slot:focus-within {
@@ -456,19 +470,19 @@ body.dragging * {
   border-color: rgba(242, 201, 76, 0.7);
   box-shadow: 0 14px 30px rgba(0,0,0,0.18);
 }
-
+ 
 .sticker-slot:hover::before,
 .sticker-slot:focus-visible::before,
 .sticker-slot:focus-within::before {
   opacity: 1;
 }
-
+ 
 .special-slot {
   grid-column: span 2;
   width: min(72%, 312px);
   justify-self: center;
 }
-
+ 
 .slot-number {
   width: 45px;
   height: 45px;
@@ -482,18 +496,18 @@ body.dragging * {
   font-weight: 700;
   letter-spacing: 1px;
 }
-
+ 
 .slot-name {
   font-weight: 700;
   font-size: 0.9rem;
   color: rgba(10, 14, 18, 0.95);
 }
-
+ 
 .slot-role {
   font-size: 0.74rem;
   color: #626c78;
 }
-
+ 
 .sticker-slot .slot-ghost {
   display: block;
   width: 100%;
@@ -504,7 +518,7 @@ body.dragging * {
   border-radius: inherit;
   opacity: 0.4;
 }
-
+ 
 .sticker-img {
   position: absolute;
   inset: 0;
@@ -515,18 +529,18 @@ body.dragging * {
   animation: sticker-aparecer 420ms ease-out forwards;
   border-radius: 14px;
 }
-
+ 
 .sticker-slot:has(.sticker-img) {
   padding: 0;
   overflow: hidden;
 }
-
+ 
 .sticker-slot:has(.sticker-img) .slot-number,
 .sticker-slot:has(.sticker-img) .slot-role,
 .sticker-slot:has(.sticker-img) .slot-ghost {
   display: none;
 }
-
+ 
 .sticker-slot:has(.sticker-img) .slot-name {
   position: absolute;
   inset: auto 0 0 0;
@@ -538,7 +552,7 @@ body.dragging * {
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.8));
   border-radius: 0 0 14px 14px;
 }
-
+ 
 .sticker-slot:has(.sticker-img) .slot-name::after {
   content: "ARCHIVE VERIFIED";
   display: block;
@@ -547,12 +561,12 @@ body.dragging * {
   opacity: 0.75;
   margin-top: 3px;
 }
-
+ 
 .slot-filled {
   border-color: rgba(242, 201, 76, 0.66);
   box-shadow: inset 0 0 0 1px rgba(242, 201, 76, 0.25);
 }
-
+ 
 .slot-filled::after {
   content: "";
   position: absolute;
@@ -561,7 +575,7 @@ body.dragging * {
   box-shadow: inset 0 0 0 1px rgba(242, 201, 76, 0.2), inset 0 0 40px rgba(242, 201, 76, 0.08);
   pointer-events: none;
 }
-
+ 
 .page-footer {
   margin-top: auto;
   padding-top: 10px;
@@ -575,7 +589,7 @@ body.dragging * {
   position: relative;
   z-index: 2;
 }
-
+ 
 .page-cover,
 .page-cover-back {
   background:
@@ -584,7 +598,7 @@ body.dragging * {
   color: var(--text);
   border: 1px solid rgba(242, 201, 76, 0.22);
 }
-
+ 
 .page-cover .cover-content,
 .page-cover-back .cover-back-content {
   display: flex;
@@ -594,7 +608,7 @@ body.dragging * {
   text-align: center;
   padding: 46px 34px;
 }
-
+ 
 .cover-seal,
 .cover-badge {
   text-transform: uppercase;
@@ -606,18 +620,18 @@ body.dragging * {
   color: var(--bat-yellow);
   font-size: 0.72rem;
 }
-
+ 
 .cover-body {
   width: 100%;
   display: grid;
   place-items: center;
   gap: 10px;
 }
-
+ 
 /* ===================================================
    MODIFICAÇÕES: TAMANHO E ALINHAMENTO DO SVG
    =================================================== */
-
+ 
 .bat-signal-sphere {
   position: relative;
   width: 240px;
@@ -628,7 +642,7 @@ body.dragging * {
   justify-content: center;
   isolation: isolate;
 }
-
+ 
 .bat-signal-glow {
   position: absolute;
   top: 50%;
@@ -641,7 +655,7 @@ body.dragging * {
   transform: translate(-50%, -50%);
   z-index: 0;
 }
-
+ 
 .bat-logo {
   position: absolute;
   top: 60%;
@@ -654,9 +668,9 @@ body.dragging * {
   filter: drop-shadow(0 0 12px rgba(242, 201, 76, 0.6));
   transform: translate(-50%, -50%);
 }
-
+ 
 /* =================================================== */
-
+ 
 .bat-ring {
   position: absolute;
   left: 50%;
@@ -666,38 +680,38 @@ body.dragging * {
   pointer-events: none;
   z-index: 1;
 }
-
+ 
 .ring-1 {
   width: 230px;
   height: 230px;
   transform: translate(-50%, -50%) rotateX(68deg) rotateY(12deg);
 }
-
+ 
 .ring-2 {
   width: 166px;
   height: 166px;
   transform: translate(-50%, -50%) rotateX(71deg) rotateY(65deg);
 }
-
+ 
 .cover-title,
 .cover-subtitle {
   font-family: 'Bebas Neue', sans-serif;
   line-height: 0.9;
   text-transform: uppercase;
 }
-
+ 
 .cover-title {
   font-size: 4.8rem;
   letter-spacing: 4px;
   color: #f4f5f6;
 }
-
+ 
 .cover-subtitle {
   font-size: 2rem;
   letter-spacing: 8px;
   color: var(--bat-yellow);
 }
-
+ 
 .cover-footer-text,
 .cover-footer {
   font-size: 0.72rem;
@@ -705,14 +719,14 @@ body.dragging * {
   text-transform: uppercase;
   color: rgba(233, 237, 241, 0.7);
 }
-
+ 
 .cover-back-header h2 {
   font-size: 2.2rem;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--bat-yellow);
 }
-
+ 
 .cover-back-body {
   width: 100%;
   display: flex;
@@ -720,7 +734,7 @@ body.dragging * {
   align-items: center;
   gap: 20px;
 }
-
+ 
 .tech-logo-collage,
 .summary-text,
 .cover-back-footer {
@@ -729,7 +743,7 @@ body.dragging * {
   color: rgba(233, 237, 241, 0.8);
   letter-spacing: 1.2px;
 }
-
+ 
 .classified-stamp {
   padding: 8px 12px;
   border-radius: 999px;
@@ -739,7 +753,7 @@ body.dragging * {
   color: var(--bat-yellow);
   font-size: 0.72rem;
 }
-
+ 
 .barcode-container {
   background: #ffffff;
   border-radius: 10px;
@@ -750,29 +764,29 @@ body.dragging * {
   gap: 8px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.32);
 }
-
+ 
 .barcode {
   display: flex;
   align-items: flex-end;
   gap: 2px;
   height: 42px;
 }
-
+ 
 .bar {
   width: 3px;
   height: 100%;
   background: #060606;
 }
-
+ 
 .bar.thin { width: 1.5px; }
 .bar.thick { width: 5px; }
-
+ 
 .barcode-number {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.72rem;
   color: #111;
 }
-
+ 
 .intro-screen {
   position: fixed;
   inset: 0;
@@ -783,7 +797,7 @@ body.dragging * {
   backdrop-filter: blur(8px);
   transition: opacity 500ms ease, visibility 500ms ease;
 }
-
+ 
 .intro-terminal {
   width: min(640px, calc(100vw - 40px));
   border: 1px solid rgba(242, 201, 76, 0.32);
@@ -794,7 +808,7 @@ body.dragging * {
   flex-direction: column;
   gap: 12px;
 }
-
+ 
 .intro-line {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.82rem;
@@ -803,16 +817,16 @@ body.dragging * {
   opacity: 0;
   animation: introLineReveal 600ms ease forwards;
 }
-
+ 
 .delay-1 { animation-delay: 350ms; }
 .delay-2 { animation-delay: 650ms; }
 .delay-3 { animation-delay: 900ms; }
 .delay-4 { animation-delay: 1150ms; }
-
+ 
 .text-green { color: #c2ccbb; }
 .text-yellow { color: var(--bat-yellow); }
 .text-white { color: var(--text); }
-
+ 
 .intro-progress {
   margin-top: 4px;
   width: 100%;
@@ -821,7 +835,7 @@ body.dragging * {
   background: rgba(233, 237, 241, 0.08);
   border-radius: 999px;
 }
-
+ 
 .intro-progress-bar {
   width: 100%;
   height: 100%;
@@ -830,7 +844,7 @@ body.dragging * {
   background: linear-gradient(90deg, var(--gold), var(--bat-yellow));
   animation: introBar 900ms ease 800ms forwards;
 }
-
+ 
 .modal {
   position: fixed;
   inset: 0;
@@ -838,39 +852,50 @@ body.dragging * {
   display: grid;
   place-items: center;
   padding: 18px;
+  padding-top: calc(18px + env(safe-area-inset-top));
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
 }
-
+ 
 .modal-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(1, 1, 1, 0.7);
   backdrop-filter: blur(8px);
 }
-
+ 
 .modal-wrapper {
   position: relative;
   width: min(840px, 100%);
+  max-height: min(90vh, 90dvh);
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(180deg, rgba(12, 14, 17, 0.96), rgba(8, 10, 12, 0.98));
   border: 1px solid rgba(242, 201, 76, 0.3);
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 18px 80px rgba(0,0,0,0.6);
 }
-
+ 
+.modal-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+ 
 .modal-header {
   padding: 14px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(242, 201, 76, 0.16);
+  flex-shrink: 0;
 }
-
+ 
 .modal-header-title-group {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
+ 
 .modal-header-dot {
   width: 10px;
   height: 10px;
@@ -878,14 +903,14 @@ body.dragging * {
   background: var(--bat-yellow);
   box-shadow: 0 0 16px rgba(242, 201, 76, 0.9);
 }
-
+ 
 .modal-subtitle {
   text-transform: uppercase;
   letter-spacing: 1.6px;
   font-size: 0.74rem;
   color: var(--muted);
 }
-
+ 
 .modal-close-btn {
   border-radius: 50%;
   width: 40px;
@@ -893,14 +918,16 @@ body.dragging * {
   font-size: 1.6rem;
   cursor: pointer;
 }
-
+ 
 .modal-body {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 20px;
   padding: 20px;
+  flex: 1;
+  min-height: 0;
 }
-
+ 
 .modal-image-container {
   position: relative;
   min-height: 330px;
@@ -909,20 +936,20 @@ body.dragging * {
   background: linear-gradient(180deg, #14181c, #0a0c10);
   border: 1px solid rgba(242, 201, 76, 0.2);
 }
-
+ 
 .modal-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
+ 
 .modal-image-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, transparent, rgba(0,0,0,0.72));
 }
-
+ 
 .modal-rarity-badge {
   position: absolute;
   top: 14px;
@@ -935,7 +962,7 @@ body.dragging * {
   color: #0b0d0f;
   background: linear-gradient(135deg, rgba(242, 201, 76, 0.92), rgba(201, 154, 46, 0.95));
 }
-
+ 
 .modal-scanner-line {
   position: absolute;
   left: 0;
@@ -945,54 +972,54 @@ body.dragging * {
   box-shadow: 0 0 12px rgba(242, 201, 76, 0.75);
   animation: scanner 2.2s linear infinite;
 }
-
+ 
 .modal-info {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
+ 
 .info-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
+ 
 .info-label {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 0.7rem;
   color: var(--muted);
 }
-
+ 
 .info-value,
 .info-value-sub {
   font-family: 'Space Grotesk', sans-serif;
 }
-
+ 
 .info-value {
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   color: var(--text);
   text-transform: uppercase;
 }
-
+ 
 .info-value-sub {
   font-size: 1rem;
   color: #f0c968;
 }
-
+ 
 .info-desc {
   font-size: 0.97rem;
   line-height: 1.6;
   color: rgba(233, 237, 241, 0.9);
 }
-
+ 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-
+ 
 .status-indicator {
   display: inline-flex;
   align-items: center;
@@ -1003,7 +1030,7 @@ body.dragging * {
   background: rgba(242, 201, 76, 0.1);
   border: 1px solid rgba(242, 201, 76, 0.24);
 }
-
+ 
 .status-dot {
   width: 9px;
   height: 9px;
@@ -1011,7 +1038,7 @@ body.dragging * {
   background: var(--bat-yellow);
   box-shadow: 0 0 12px rgba(242, 201, 76, 0.8);
 }
-
+ 
 .modal-footer {
   padding: 12px 16px;
   border-top: 1px solid rgba(242, 201, 76, 0.16);
@@ -1019,94 +1046,227 @@ body.dragging * {
   text-transform: uppercase;
   letter-spacing: 1.7px;
   font-size: 0.72rem;
+  flex-shrink: 0;
 }
-
+ 
 @keyframes introLineReveal {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
+ 
 @keyframes introBar {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
-
+ 
 @keyframes scanner {
   0% { top: -6px; opacity: 0; }
   12% { opacity: 1; }
   100% { top: calc(100% + 6px); opacity: 0; }
 }
-
+ 
 @keyframes sticker-aparecer {
   from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
 }
-
+ 
+/* ===================================================
+   RESPONSIVIDADE — SISTEMA DE BREAKPOINTS
+   Desktop-first (a base acima já é o layout Desktop Grande 1440px+).
+   Cada faixa herda da anterior e só sobrescreve o necessário.
+   =================================================== */
+ 
+/* ---------- DESKTOP (1024px – 1439px) ---------- */
+@media (max-width: 1439px) and (min-width: 1024px) {
+  .page { width: clamp(430px, 42vw, 550px); height: clamp(660px, 62vw, 800px); }
+  .album-viewport { height: min(760px, calc(100dvh - 140px)); }
+}
+ 
+/* ---------- 1200px: ajuste intermediário para notebooks menores ---------- */
 @media (max-width: 1200px) {
   .page { width: 470px; height: 700px; }
-  .album-viewport { height: 700px; }
+  .album-viewport { height: min(700px, calc(100dvh - 130px)); }
   .cover-title { font-size: 4rem; }
 }
-
-@media (max-width: 860px) {
-  .dashboard-header { flex-direction: column; align-items: stretch; }
+ 
+/* ---------- TABLET (768px – 1023px) ---------- */
+@media (max-width: 1023px) {
+  .dashboard-header { flex-direction: column; align-items: stretch; gap: 8px; }
   .db-title-group, .db-progress-group { width: 100%; justify-content: space-between; }
+  .db-title-group { min-width: 0; }
+  .db-progress-bar-container { width: min(260px, 44vw); }
+ 
   .modal-body { grid-template-columns: 1fr; }
   .modal-image-container { min-height: 260px; }
+ 
+  .album-viewport {
+    width: min(94vw, 900px);
+    height: min(680px, calc(100dvh - 168px));
+    padding-top: 108px;
+  }
+ 
+  .page { width: min(46vw, 420px); height: min(64vh, 640px); }
+ 
+  .nav-btn { width: 50px; height: 50px; }
+  .nav-btn-left { left: calc(12px + env(safe-area-inset-left)); }
+  .nav-btn-right { right: calc(12px + env(safe-area-inset-right)); }
 }
-
-@media (max-width: 768px) {
+ 
+/* ---------- MOBILE GRANDE (481px – 767px) e MOBILE (361px – 480px) ----------
+   Abaixo de 768px o flipbook deixa de tentar mostrar duas páginas e passa
+   a ser uma experiência de "uma página por vez", ocupando quase toda a
+   largura disponível. O componente de biblioteca (StPageFlip) já é
+   instruído em app.js (usePortrait + limites min/max) a se adaptar a este
+   container — aqui só garantimos que o container tenha o tamanho certo. */
+@media (max-width: 767px) {
   .album-viewport {
     width: 100%;
-    min-height: 560px;
-    padding-top: 112px;
+    height: auto;
+    min-height: min(78dvh, 620px);
+    padding: 100px 10px 20px;
   }
-
+ 
   .dashboard-header {
-    top: 8px;
+    top: calc(8px + env(safe-area-inset-top));
     width: calc(100vw - 20px);
-    padding: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
   }
-
+ 
+  .db-title { white-space: normal; }
+ 
   .db-title,
   .db-status-text,
   .db-percentage {
-    font-size: 0.64rem;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
   }
-
+ 
   .db-progress-bar-container {
-    width: min(180px, 46vw);
+    width: min(150px, 40vw);
   }
-
+ 
+  /* Botões de navegação viram uma barra inferior no mobile: ficam longe do
+     conteúdo lateral das páginas e ficam a uma distância confortável do polegar. */
   .nav-btn {
-    width: 44px;
-    height: 44px;
-    opacity: 0.5;
+    position: fixed;
+    top: auto;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: none;
+    width: 48px;
+    height: 48px;
+    opacity: 0.85;
   }
-
-  .nav-btn-left { left: 8px; }
-  .nav-btn-right { right: 8px; }
-
+ 
+  .nav-btn-left { left: calc(50% - 60px); }
+  .nav-btn-right { right: calc(50% - 60px); }
+ 
+  .nav-btn:hover,
+  .nav-btn:focus-visible {
+    transform: scale(1.04);
+  }
+ 
   .page {
-    width: 100%;
-    height: 580px;
+    width: min(92vw, 460px);
+    height: min(66dvh, 620px);
+    margin: 0 auto;
   }
-
-  .page-content { padding: 22px 18px; }
-  .page-title { font-size: 1.7rem; }
+ 
+  .page-content { padding: 20px 16px; gap: 12px; }
+  .page-title { font-size: 1.6rem; }
+  .page-description { font-size: 0.86rem; }
+ 
   .stickers-grid { gap: 10px; }
-  .sticker-slot { min-height: 98px; }
-  .special-slot { width: 92%; }
+  .sticker-slot { min-height: 100px; }
+  .special-slot { width: 94%; }
   .slot-number { width: 36px; height: 36px; font-size: 0.98rem; }
   .slot-name { font-size: 0.82rem; }
   .slot-role { font-size: 0.68rem; }
+ 
   .cover-title { font-size: 3rem; }
   .cover-subtitle { font-size: 1.5rem; letter-spacing: 4px; }
   .cover-seal, .cover-badge { font-size: 0.62rem; }
   .cover-footer-text { font-size: 0.62rem; }
-  .intro-line { font-size: 0.72rem; }
+  .bat-signal-sphere { width: 180px; height: 180px; }
+  .bat-logo { width: 220px; }
+ 
+  .intro-line { font-size: 0.72rem; letter-spacing: 1.2px; }
+  .intro-terminal { padding: 18px; }
+ 
+  .modal-wrapper { border-radius: 14px; width: min(95vw, 100%); }
+  .modal-close-btn { width: 44px; height: 44px; }
+  .info-value { font-size: clamp(1.5rem, 6vw, 2rem); }
 }
-
+ 
+/* ---------- MOBILE (361px – 480px): grade de figurinhas ainda em 2 colunas
+   desde que continue legível; abaixo disso vira 1 coluna (regra extra-small) ---------- */
+@media (max-width: 480px) {
+  .sound-btn { width: 42px; height: 42px; }
+  .dashboard-header { padding: 9px 10px; }
+  .db-progress-bar-container { width: min(120px, 34vw); }
+  .page { width: min(94vw, 400px); }
+  .stickers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .sticker-slot { min-height: 92px; padding: 10px; }
+}
+ 
+/* ---------- EXTRA SMALL (≤360px) ----------
+   Telas muito estreitas: os cards de 2 colunas ficam apertados demais,
+   então a grade passa para 1 coluna para manter nomes e descrições legíveis. */
+@media (max-width: 360px) {
+  .stickers-grid { grid-template-columns: 1fr; }
+  .special-slot { grid-column: span 1; width: 100%; }
+  .sticker-slot { min-height: 84px; }
+  .page-content { padding: 16px 14px; }
+  .page-title { font-size: 1.4rem; }
+  .cover-title { font-size: 2.5rem; }
+  .cover-subtitle { font-size: 1.2rem; letter-spacing: 3px; }
+  .nav-btn { width: 44px; height: 44px; }
+  .nav-btn-left { left: calc(50% - 54px); }
+  .nav-btn-right { right: calc(50% - 54px); }
+}
+ 
+/* ---------- LANDSCAPE MOBILE ----------
+   Telas curtas e largas (celular deitado): o dashboard e o livro precisam
+   encolher verticalmente para nunca cortar conteúdo nem esconder os botões. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-header {
+    top: calc(6px + env(safe-area-inset-top));
+    padding: 6px 12px;
+  }
+ 
+  .db-title-group, .db-progress-group { gap: 6px; }
+  .db-title { display: none; } /* mantém só o essencial (contagem/percentual) visível */
+ 
+  .album-viewport {
+    padding: 64px 8px 12px;
+    min-height: 0;
+    height: calc(100dvh - 10px);
+  }
+ 
+  .page {
+    height: min(80dvh, 420px);
+    width: min(46vh * 0.72, 92vw);
+  }
+ 
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+  }
+ 
+  .nav-btn-left { left: calc(6px + env(safe-area-inset-left)); }
+  .nav-btn-right { right: calc(6px + env(safe-area-inset-right)); }
+ 
+  .sound-btn { top: calc(6px + env(safe-area-inset-top)); width: 38px; height: 38px; }
+ 
+  .modal-wrapper { max-height: min(94vh, 94dvh); }
+  .modal-body { grid-template-columns: 220px 1fr; }
+  .modal-image-container { min-height: 0; }
+}
+ 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
