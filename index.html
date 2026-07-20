@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotham Archives - A Coleção Classificada</title>
+    <!-- Google Fonts for Gothic, technical, and digital interface look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Style -->
+     <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Custom Batman Symbol Cursor -->
+    <div id="cursor-batman" class="cursor-batman" aria-hidden="true">
+        <!-- O mesmo SVG usado na capa -->
+        <svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+            <path fill="currentColor" d="M19.5 4.25c-10.77 0-19.5 5.261-19.5 11.75s8.73 11.75 19.5 11.75 19.5-5.261 19.5-11.75-8.73-11.75-19.5-11.75zM30.555 23.53c0 0.062 1.951-2.357 0.39-3.981-1.874-2.124-5.116 1.056-5.116 1.056-2.562-5.059-6.424 3.145-6.424 3.145s-3.348-7.731-6.221-3.047c0.062 0-2.383-2.793-4.819-1.481-1.749 1.749 0 4.091 0 4.091-9.119-3.186-9.712-12.492 2.952-16.286-3.576 4.481 6.59 10.649 5.84-0.344l2.155 1.89c0 0 2.171-1.796 2.171-1.921-0.25 10.993 9.369 4.544 6.121 0.484 11.429 3.308 13.381 11.21 2.951 16.394z" />
+        </svg>
+    </div>
+    <!-- Cinematic Intro Overlay -->
+    <div id="intro-screen" class="intro-screen" aria-hidden="true">
+        <div class="intro-terminal">
+            <p id="local-time-text" class="intro-line text-green">CIDADE GOTHAM // HORÁRIO LOCAL 00:47</p>
+            <p class="intro-line text-green delay-1">CONEXÃO SEGURA ESTABELECIDA...</p>
+            <p class="intro-line text-yellow delay-2">ACESSANDO O MAINFRAME DOS ARQUIVOS...</p>
+            <div class="intro-progress delay-3">
+                <div class="intro-progress-bar"></div>
+            </div>
+            <p class="intro-line text-white delay-4 uppercase font-bold tracking-widest">ACESSO CONCEDIDO</p>
+        </div>
+    </div>
+
+    <!-- Sound Control -->
+    <button id="sound-toggle" class="sound-btn" aria-label="Alternar som">
+        <svg class="sound-icon-on" viewBox="0 0 24 24" width="22" height="22">
+            <path fill="currentColor"
+                d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+        </svg>
+        <svg class="sound-icon-off hidden" viewBox="0 0 24 24" width="22" height="22">
+            <path fill="currentColor"
+                d="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.5C15.58,18 14.83,18.4 14,18.71V20.77C15.38,20.44 16.63,19.78 17.7,18.9L20.73,21.93L22,20.66L4.27,3M14,3.23V5.29C14.73,5.5 15.43,5.83 16.07,6.26L14.59,7.74C14.41,7.65 14.21,7.58 14,7.54V9.54L19,14.54C19,13.7 19,12.85 19,12C19,7.72 16,4.14 14,3.23M16.5,12C16.5,11.2 16.1,10.5 15.5,10.05L14,11.55V12.45L15.46,13.9C15.48,13.28 16.5,12.62 16.5,12Z" />
+        </svg>
+    </button>
+
+    <!-- Batcave Mainframe Dashboard / Collection Progress -->
+    <div id="progress-dashboard" class="dashboard-header">
+        <div class="db-title-group">
+            <div class="db-dot animate-pulse"></div>
+            <span class="db-title">BATCAVE MAINFRAME // STATUS DOS ARQUIVOS</span>
+        </div>
+        <div class="db-progress-group">
+            <span class="db-status-text">DADOS DECRIPTADOS: <span id="progress-stats">0 / 30 DOSSIERS</span></span>
+            <div class="db-progress-bar-container">
+                <div id="db-progress-bar" class="db-progress-bar" style="width: 0%"></div>
+            </div>
+            <span id="progress-percentage" class="db-percentage">0%</span>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button id="btn-prev" class="nav-btn nav-btn-left" aria-label="Página Anterior">
+        <svg viewBox="0 0 24 24" width="36" height="36">
+            <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+        </svg>
+    </button>
+    <button id="btn-next" class="nav-btn nav-btn-right" aria-label="Próxima Página">
+        <svg viewBox="0 0 24 24" width="36" height="36">
+            <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+        </svg>
+    </button>
+
+    <!-- Album Container -->
+    <div class="album-viewport" id="album-viewport">
+        <div class="flip-book" id="book">
+
+            <!-- PAGINA 0: CAPA -->
+            <div class="page page-cover" data-density="hard">
+                <div class="page-content cover-content">
+                    <div class="cover-header">
+                        <span class="cover-seal">ARQUIVOS CONFIDENCIAIS</span>
+                    </div>
+                    <div class="cover-body">
+                        <!-- Projeção do Bat-Signal da GCPD -->
+                        <div class="bat-signal-sphere">
+                            <div class="bat-signal-glow"></div>
+                            <svg viewBox="0 0 100 50" class="bat-logo" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="currentColor" d="M19.5 4.25c-10.77 0-19.5 5.261-19.5 11.75s8.73 11.75 19.5 11.75 19.5-5.261 19.5-11.75-8.73-11.75-19.5-11.75zM30.555 23.53c0 0.062 1.951-2.357 0.39-3.981-1.874-2.124-5.116 1.056-5.116 1.056-2.562-5.059-6.424 3.145-6.424 3.145s-3.348-7.731-6.221-3.047c0.062 0-2.383-2.793-4.819-1.481-1.749 1.749 0 4.091 0 4.091-9.119-3.186-9.712-12.492 2.952-16.286-3.576 4.481 6.59 10.649 5.84-0.344l2.155 1.89c0 0 2.171-1.796 2.171-1.921-0.25 10.993 9.369 4.544 6.121 0.484 11.429 3.308 13.381 11.21 2.951 16.394z" />
+                            </svg>
+                            <div class="bat-ring ring-1"></div>
+                            <div class="bat-ring ring-2"></div>
+                        </div>
+
+                        <h1 class="cover-title">GOTHAM</h1>
+                        <h2 class="cover-subtitle">ARCHIVES</h2>
+                        
+                        <div class="cover-badge">A COLEÇÃO CLASSIFICADA</div>
+                        
+                        <p class="cover-footer-text">ARQUIVO 001 // INTERFACE SEGURA</p>
+                    </div>
+                    <div class="cover-footer">
+                        <span>SISTEMA BATCAVE v4.12 // EST. 1939</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 1: A FAMÍLIA BAT -->
+            <div class="page page-left">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-batfamily">A FAMÍLIA BAT</span>
+                        <h3 class="page-title">Arquivo 01 // Manto & Capuz</h3>
+                        <p class="page-description">Vigilantes e combatentes do crime operando sob a sombra do Bat em Gotham City.</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#01</div>
+                            <div class="slot-name">Batman</div>
+                            <div class="slot-role">O Cavaleiro das Trevas</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#02</div>
+                            <div class="slot-name">Robin</div>
+                            <div class="slot-role">O Menino Maravilha</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#03</div>
+                            <div class="slot-name">Nightwing</div>
+                            <div class="slot-role">Dick Grayson</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#04</div>
+                            <div class="slot-name">Batgirl</div>
+                            <div class="slot-role">Barbara Gordon</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#05</div>
+                            <div class="slot-name">Alfred Pennyworth</div>
+                            <div class="slot-role">O Mordomo Leal</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 2: GALERIA DOS ROGUES -->
+            <div class="page page-right">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-rogues">GALERIA DOS ROGUES</span>
+                        <h3 class="page-title">Arquivo 02 // Mais Procurados</h3>
+                        <p class="page-description">Mestres do crime e psicopatas de Gotham ameaçando a segurança urbana.</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#06</div>
+                            <div class="slot-name">Joker</div>
+                            <div class="slot-role">Príncipe Palhaço do Crime</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#07</div>
+                            <div class="slot-name">Riddler</div>
+                            <div class="slot-role">Edward Nygma</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#08</div>
+                            <div class="slot-name">Pinguim</div>
+                            <div class="slot-role">Oswald Cobblepot</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#09</div>
+                            <div class="slot-name">Two-Face</div>
+                            <div class="slot-role">Harvey Dent</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#10</div>
+                            <div class="slot-name">Bane</div>
+                            <div class="slot-role">O Soldado do Veneno</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 3: ARQUIVOS ARKHAM -->
+            <div class="page page-left">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-arkham">ARQUIVOS ARKHAM</span>
+                        <h3 class="page-title">Arquivo 03 // Pacientes do Sanatório</h3>
+                        <p class="page-description">Registros de segurança de internos e instalações ligadas ao Asilo Arkham e suas expansões.</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#11</div>
+                            <div class="slot-name">Arkham Asylum</div>
+                            <div class="slot-role">Elizabeth Arkham Asylum</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#12</div>
+                            <div class="slot-name">Arkham City</div>
+                            <div class="slot-role">Super-Prison District</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#13</div>
+                            <div class="slot-name">Arkham Knight</div>
+                            <div class="slot-role">Military Commander</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#14</div>
+                            <div class="slot-name">Hugo Strange</div>
+                            <div class="slot-role">Mastermind Psychiatrist</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#15</div>
+                            <div class="slot-name">Harley Quinn</div>
+                            <div class="slot-role">Harleen Quinzel</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 4: LOCAIS DE GOTHAM -->
+            <div class="page page-right">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-locations">LOCAIS DE GOTHAM</span>
+                        <h3 class="page-title">Arquivo 04 // Marcos da Cidade</h3>
+                        <p class="page-description">Pontos geográficos referenciados nas redes de vigilância da GCPD.</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#16</div>
+                            <div class="slot-name">Batcave</div>
+                            <div class="slot-role">Santuário Subterrâneo</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#17</div>
+                            <div class="slot-name">Mansão Wayne</div>
+                            <div class="slot-role">Residência Ancestral</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#18</div>
+                            <div class="slot-name">Quartel da GCPD</div>
+                            <div class="slot-role">Central de Vigilância</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#19</div>
+                            <div class="slot-name">Iceberg Lounge</div>
+                            <div class="slot-role">Clube de Frente do Pinguim</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#20</div>
+                            <div class="slot-name">Crime Alley</div>
+                            <div class="slot-role">Local da Tragédia da Park Row</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 5: BAT-GEAR - PARTE 1 -->
+            <div class="page page-left">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-gear">BAT-GEAR</span>
+                        <h3 class="page-title">Arquivo 05 // Arsenal & Equipamentos I</h3>
+                        <p class="page-description">Gadgets avançados, armas e armaduras táticas utilizadas em campo.</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#21</div>
+                            <div class="slot-name">Batarang</div>
+                            <div class="slot-role">Projétil de Assinatura</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#22</div>
+                            <div class="slot-name">Grapnel Gun</div>
+                            <div class="slot-role">Travessia de Alta Tensão</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#23</div>
+                            <div class="slot-name">Batmobile</div>
+                            <div class="slot-role">Veículo de Assalto Blindado</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#24</div>
+                            <div class="slot-name">Bat-Signal</div>
+                            <div class="slot-role">Holofote Tático</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#25</div>
+                            <div class="slot-name">Sequenciador Criptográfico</div>
+                            <div class="slot-role">Descriptador de Sinais</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 6: BAT-Friends -->
+            <div class="page page-right">
+                <div class="page-content">
+                    <div class="page-header">
+                        <span class="tech-badge badge-gear">BAT-Friends</span>
+                        <h3 class="page-title">Arquivo 06 // Aliados & Inimigos? </h3>
+                        <p class="page-description">Confidentes e possíveis ameaças</p>
+                    </div>
+                    <div class="stickers-grid">
+                        <div class="sticker-slot">
+                            <div class="slot-number">#26</div>
+                            <div class="slot-name">Alfred Pennyworth</div>
+                            <div class="slot-role">Confidente de Bruce Wayne</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#27</div>
+                            <div class="slot-name">Commissioner Gordon</div>
+                            <div class="slot-role">Comissário policial de Gotham</div>
+                        </div>
+                        <div class="sticker-slot special-slot">
+                            <div class="slot-number">#28</div>
+                            <div class="slot-name">Catwoman</div>
+                            <div class="slot-role">Ladra de luxo</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#29</div>
+                            <div class="slot-name">Harley Quinn</div>
+                            <div class="slot-role">Antagonista carismática</div>
+                        </div>
+                        <div class="sticker-slot">
+                            <div class="slot-number">#30</div>
+                            <div class="slot-name">Red Hood</div>
+                            <div class="slot-role">Ex-Robin que retorna como o símbolo de confronto e redenção em Gotham.</div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>CLASSIFICADO // BATCAVE SEGURA</span>
+                        <span>Pág. 6</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGINA 7: CONTRACAPA -->
+            <div class="page page-cover-back" data-density="hard">
+                <div class="page-content cover-back-content">
+                    <div class="cover-back-header">
+                        <h2>GOTHAM ARCHIVES</h2>
+                    </div>
+                    <div class="cover-back-body">
+                        <div class="tech-logo-collage">
+                            <span>FAMÍLIA</span> • <span>ROGUES</span> • <span>ARKHAM</span> • <span>LOCAIS</span> • <span>GEAR</span>
+                        </div>
+                        <div class="classified-stamp">ACESSO RESTRITO</div>
+                        <p class="summary-text">
+                            Este banco de dados criptografado reúne inteligência, dossiês geográficos e esquemas de equipamentos táticos. Mapeados nas redes de crime da GCPD e nos subrotinas do Batcave. Tentativas não autorizadas de descriptografia alertarão Batman.
+                        </p>
+                        <div class="barcode-container">
+                            <div class="barcode">
+                                <!-- Simulated barcode lines -->
+                                <div class="bar"></div>
+                                <div class="bar thin"></div>
+                                <div class="bar"></div>
+                                <div class="bar thick"></div>
+                                <div class="bar thin"></div>
+                                <div class="bar"></div>
+                                <div class="bar thick"></div>
+                                <div class="bar"></div>
+                                <div class="bar thin"></div>
+                                <div class="bar thick"></div>
+                            </div>
+                            <span class="barcode-number">BAT-8575-CONF-2026</span>
+                        </div>
+                    </div>
+                    <div class="cover-back-footer">
+                        <span>LINK DIRETO DO BATCAVE • CRIPTOGRAFADO</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Batsignal / Batcave Confidential Dossier Modal -->
+    <div id="archive-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-backdrop"></div>
+        <div class="modal-wrapper">
+            <div class="modal-header">
+                <div class="modal-header-title-group">
+                    <div class="modal-header-dot"></div>
+                    <span class="modal-subtitle">BATCAVE MAINFRAME // DOSSIÊ SEGURO</span>
+                </div>
+                <button id="modal-close" class="modal-close-btn" aria-label="Fechar arquivo">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image-container">
+                    <img id="modal-image" src="" alt="" class="modal-image" />
+                    <div class="modal-image-overlay"></div>
+                    <div class="modal-rarity-badge" id="modal-rarity">LENDÁRIO</div>
+                    <div class="modal-scanner-line"></div>
+                </div>
+                <div class="modal-info">
+                    <div class="info-group">
+                        <span class="info-label">IDENTIFICADOR DO SUJEITO</span>
+                        <h2 class="info-value" id="modal-title">BATMAN</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <span class="info-label">CATEGORIA COGNITIVA</span>
+                            <span class="info-value-sub" id="modal-category">A FAMÍLIA BAT</span>
+                        </div>
+                        <div class="info-group">
+                            <span class="info-label">CÓDIGO DO BANCO</span>
+                            <span class="info-value-sub" id="modal-id">#01</span>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">RELATÓRIO DO DOSSIÊ</span>
+                        <p class="info-desc" id="modal-desc">Carregando o relatório de descriptografia do banco...</p>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">CLEARANCE DE SEGURANÇA</span>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span class="status-text" id="modal-status">ARQUIVO VERIFICADO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span>LINK BATCAVE SEGURA ESTABELECIDO // GOTHAM NET v4.12</span>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <!-- Page Flip Library -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+    <!-- Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>
