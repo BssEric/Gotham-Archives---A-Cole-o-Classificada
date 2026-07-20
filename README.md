@@ -1,93 +1,184 @@
-# Gotham Archives - A Coleção Classificada
+# 🦇 Gotham Archives
 
-Projeto web temático de Batman, com foco em uma experiência de álbum de figurinhas estilo “arquivos confidenciais” da Batcave. A interface foi criada para transmitir uma estética de tela de vigilância, dashboard de arquivos e catálogo interativo.
+> Uma experiência digital imersiva inspirada em arquivos classificados, coleções e sistemas de inteligência do universo do Batman.
 
----
+**Gotham Archives** transforma uma coleção de personagens e elementos do universo Batman em uma experiência interativa com estética de arquivo secreto, animações e um álbum digital com efeito de virar páginas.
 
-## 🎯 Objetivo
+## 🌐 Live Demo
 
-O projeto simula um banco de dados secreto de Gotham, onde o usuário navega por uma coleção de dossiers com categorias como:
-
-- A Família Bat
-- Galeria dos Rogues
-- Arquivos Arkham
-- Locais de Gotham
-- Bat-Gear
-
-A navegação é feita em um livro virtual com efeito de página, e o conteúdo é carregado dinamicamente pelo backend.
-
----
-
-## ✨ Estado atual do projeto
-
-O projeto já está estruturado com:
-
-- Frontend em HTML, CSS e JavaScript
-- Interface com intro cinematográfica, cursor customizado, dashboard de progresso e modal de detalhes
-- Animações com GSAP e flipbook com `page-flip`
-- Backend em FastAPI responsável por expor os dados das figurinhas e servir as imagens
-- CORS configurado para permitir comunicação entre o frontend e o backend
-- Arquivo de deploy em `render.yaml` para publicação no Render
-
----
-
-## 🧩 Funcionalidades implementadas
-
-- Intro inicial com linha temática de Gotham e acesso ao mainframe
-- Álbum interativo com páginas em formato de livro virtual
-- Dashboard com progresso da coleção e estatísticas de arquivos recuperados
-- Modal de dossier com informações detalhadas da figurinha
-- Efeitos sonoros com Web Audio API
-- Carregamento dinâmico das figurinhas pela API do backend
-- Visual inspirado no universo de Batman, com tipografia, neon e atmosfera técnica
-
----
-
-## 📁 Estrutura principal
-
-- `Front-End/index.html`: estrutura principal da interface e da página do álbum
-- `Front-End/app.js`: lógica do frontend, animações, navegação, modal e integração com a API
-- `Front-End/style.css`: estilos visuais da aplicação
-- `Back-End/main.py`: API FastAPI com dados das figurinhas e endpoints de imagens
-- `Back-End/requirements.txt`: dependências do backend
-- `Back-End/render.yaml`: configuração para deploy do backend
-
----
-
-## ⚙️ Como executar localmente
-
-### 1. Backend
-
-Entre na pasta do backend e inicie a API:
-
-```bash
-cd Back-End
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-A API ficará disponível em:
+> Adicione aqui o link do seu frontend publicado na Vercel.
 
 ```text
-http://127.0.0.1:8000
+https://seu-projeto.vercel.app
 ```
 
-### 2. Frontend
+## ✨ Funcionalidades
 
-Abra o arquivo HTML do frontend em um navegador, ou utilize uma extensão como Live Server no VS Code.
+* 📖 Álbum digital interativo com efeito de virar páginas
+* 🦇 Coleção de personagens e elementos do universo Batman
+* 🖼️ Carregamento dinâmico de imagens através de uma API
+* 🗂️ Organização por categorias e raridades
+* 🔍 Visualização detalhada dos arquivos
+* 🖱️ Cursor personalizado com interação baseada no movimento
+* ✨ Animações e transições imersivas
+* 🔊 Sistema de efeitos sonoros interativos
+* 📱 Interface responsiva
+* ⌨️ Suporte a interações por teclado
+* 🌐 Integração com backend desenvolvido em FastAPI
 
-O frontend já busca os dados na API via `http://127.0.0.1:8000`, então o backend precisa estar rodando para que as figurinhas sejam carregadas corretamente.
+## 🛠️ Tecnologias
+
+* **HTML5**
+* **CSS3**
+* **JavaScript**
+* **GSAP**
+* **PageFlip**
+* **Web Audio API**
+* **FastAPI API**
+* **Vercel**
+
+## 🎨 Conceito visual
+
+A interface foi desenvolvida com uma direção visual inspirada em:
+
+* arquivos classificados;
+* sistemas de inteligência;
+* tecnologia da Batcave;
+* interfaces de investigação;
+* documentos secretos;
+* coleções digitais.
+
+A experiência busca combinar uma estética cinematográfica com uma interface funcional e intuitiva.
+
+## 🧩 Arquitetura
+
+```text
+Frontend
+│
+├── HTML
+├── CSS
+├── JavaScript
+│
+└── API Request
+        │
+        ▼
+Gotham Archives API
+        │
+        ▼
+     FastAPI
+        │
+        ├── Dados das figurinhas
+        └── Imagens
+```
+
+## 🔌 Integração com a API
+
+O frontend se conecta à API através da variável:
+
+```javascript
+const API_BASE_URL =
+  "https://gotham-archives-api.onrender.com";
+```
+
+A aplicação utiliza essa URL para buscar os dados da coleção:
+
+```text
+GET /figurinhas
+```
+
+E os recursos visuais:
+
+```text
+GET /figurinhas/{id}/imagem
+```
+
+## 📁 Estrutura do projeto
+
+```text
+Frontend/
+├── index.html
+├── style.css
+├── app.js
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   └── ...
+└── README.md
+```
+
+## 🚀 Executando localmente
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/BssEric/SEU-REPOSITORIO-FRONTEND.git
+```
+
+```bash
+cd SEU-REPOSITORIO-FRONTEND
+```
+
+### 2. Execute o projeto
+
+Como o projeto utiliza HTML, CSS e JavaScript, você pode executá-lo utilizando:
+
+* Live Server no Visual Studio Code;
+* qualquer servidor HTTP local;
+* uma plataforma de hospedagem estática.
+
+## 🌍 Deploy
+
+O frontend pode ser hospedado utilizando plataformas como:
+
+* Vercel;
+* GitHub Pages;
+* Netlify.
+
+A aplicação foi projetada para funcionar com um backend independente hospedado na nuvem.
+
+## 🔗 Backend
+
+A API responsável pelo fornecimento dos dados está disponível em:
+
+```text
+https://gotham-archives-api.onrender.com
+```
+
+Documentação:
+
+```text
+https://gotham-archives-api.onrender.com/docs
+```
+
+## 📸 Preview
+
+> Adicione aqui screenshots ou GIFs da experiência.
+
+Exemplo:
+
+```markdown
+![Gotham Archives Preview](./assets/preview.png)
+```
+
+## 🎯 Objetivo do projeto
+
+O objetivo do Gotham Archives é explorar a criação de uma experiência web mais imersiva, combinando:
+
+* desenvolvimento frontend;
+* animação;
+* interação;
+* design de interface;
+* consumo de APIs;
+* arquitetura frontend/backend.
+
+O projeto também representa um estudo sobre como transformar uma interface tradicional em uma experiência digital mais narrativa e memorável.
+
+## 👨‍💻 Autor
+
+**Éric Botelho**
+
+Desenvolvedor focado em desenvolvimento web, frontend, UI/UX e experiências digitais.
 
 ---
 
-## 🌐 Deploy
-
-O backend possui configuração de deploy pronta para Render no arquivo `render.yaml`, com comando de inicialização do servidor FastAPI.
-
----
-
-## 📌 Observação
-
-Este README foi atualizado para refletir o estado atual do projeto, que já conta com a interface visual e a integração com API funcionando como base de um catálogo interativo de arquivos de Gotham.
+🦇 **Gotham Archives — The Classified Collection**
