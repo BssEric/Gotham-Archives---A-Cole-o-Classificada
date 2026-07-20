@@ -9,7 +9,7 @@
 > Adicione aqui o link do seu frontend publicado na Vercel.
 
 ```text
-https://seu-projeto.vercel.app
+[https://seu-projeto.vercel.app](https://gotham-archives-a-cole-o-classifica.vercel.app/)
 ```
 
 ## ✨ Funcionalidades
@@ -71,27 +71,6 @@ Gotham Archives API
         └── Imagens
 ```
 
-## 🔌 Integração com a API
-
-O frontend se conecta à API através da variável:
-
-```javascript
-const API_BASE_URL =
-  "https://gotham-archives-api.onrender.com";
-```
-
-A aplicação utiliza essa URL para buscar os dados da coleção:
-
-```text
-GET /figurinhas
-```
-
-E os recursos visuais:
-
-```text
-GET /figurinhas/{id}/imagem
-```
-
 ## 📁 Estrutura do projeto
 
 ```text
@@ -106,19 +85,7 @@ Frontend/
 └── README.md
 ```
 
-## 🚀 Executando localmente
-
-### 1. Clone o repositório
-
-```bash
-git clone https://github.com/BssEric/SEU-REPOSITORIO-FRONTEND.git
-```
-
-```bash
-cd SEU-REPOSITORIO-FRONTEND
-```
-
-### 2. Execute o projeto
+. Execute o projeto
 
 Como o projeto utiliza HTML, CSS e JavaScript, você pode executá-lo utilizando:
 
@@ -148,16 +115,6 @@ Documentação:
 
 ```text
 https://gotham-archives-api.onrender.com/docs
-```
-
-## 📸 Preview
-
-> Adicione aqui screenshots ou GIFs da experiência.
-
-Exemplo:
-
-```markdown
-![Gotham Archives Preview](./assets/preview.png)
 ```
 
 ## 🎯 Objetivo do projeto
