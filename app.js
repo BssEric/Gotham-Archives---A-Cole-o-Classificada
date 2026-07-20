@@ -448,6 +448,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1700);
     }
  
+    
+
   // ==========================================
     // FÍSICA AWWWARDS: Batman Cursor Smooth Follow (Lerp)
     // Só faz sentido — e só roda — em dispositivos com mouse real.
