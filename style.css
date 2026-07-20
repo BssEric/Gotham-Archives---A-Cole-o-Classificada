@@ -19,6 +19,9 @@
  
 html {
   scroll-behavior: smooth;
+  /* Evita o "bounce" de rubber-band do Safari/iOS brigando com o
+     gesto de arrastar/virar página do flipbook em mobile. */
+  overscroll-behavior: none;
 }
  
 body {
@@ -39,6 +42,7 @@ body {
   /* Rede de segurança: se o conteúdo for mais alto que a tela (telas muito baixas),
      permite rolagem vertical em vez de cortar o livro */
   overflow-y: auto;
+  overscroll-behavior: none;
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -214,6 +218,27 @@ img {
  
 .nav-btn-left { left: calc(24px + env(safe-area-inset-left)); }
 .nav-btn-right { right: calc(24px + env(safe-area-inset-right)); }
+ 
+/* Indicador "X / Y" — só existe no mobile (ver breakpoint ≤767px), onde o
+   livro mostra uma página por vez e o usuário perde a noção espacial que
+   as duas páginas do desktop davam naturalmente. */
+.page-indicator {
+  display: none;
+  position: fixed;
+  z-index: 90;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 201, 76, 0.28);
+  background: rgba(8, 10, 12, 0.72);
+  backdrop-filter: blur(10px);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  pointer-events: none;
+}
  
 .dashboard-header {
   position: fixed;
@@ -516,12 +541,29 @@ body.dragging * {
 .sticker-slot .slot-ghost {
   display: block;
   width: 100%;
-  height: 120%;
-  background: linear-gradient(180deg, rgba(242, 201, 76, 0.18), transparent 60%);
+  height: 100%;
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  opacity: 0.4;
+  z-index: 1;
+  background: linear-gradient(100deg, rgba(242, 201, 76, 0.05) 0%, rgba(242, 201, 76, 0.16) 50%, rgba(242, 201, 76, 0.05) 100%);
+  background-size: 220% 100%;
+  animation: ghost-shimmer 1.6s ease-in-out infinite;
+  opacity: 1;
+  transition: opacity 320ms ease;
+  pointer-events: none;
+}
+ 
+/* O ghost só some quando o slot está de fato preenchido (imagem carregada),
+   não apenas quando o <img> entra no DOM — assim funciona como um
+   skeleton de carregamento de verdade, não como um flash instantâneo. */
+.slot-filled .slot-ghost {
+  opacity: 0;
+}
+ 
+@keyframes ghost-shimmer {
+  0% { background-position: -120% 0; }
+  100% { background-position: 220% 0; }
 }
  
 .sticker-img {
@@ -541,8 +583,7 @@ body.dragging * {
 }
  
 .sticker-slot:has(.sticker-img) .slot-number,
-.sticker-slot:has(.sticker-img) .slot-role,
-.sticker-slot:has(.sticker-img) .slot-ghost {
+.sticker-slot:has(.sticker-img) .slot-role {
   display: none;
 }
  
@@ -1169,6 +1210,13 @@ body.dragging * {
   .nav-btn:hover,
   .nav-btn:focus-visible {
     transform: scale(1.04);
+  }
+ 
+  .page-indicator {
+    display: flex;
+    left: 50%;
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
   }
  
   .page {

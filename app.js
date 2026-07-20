@@ -13,6 +13,34 @@ let audioContext = null;
 const hasFinePointer = () => window.matchMedia("(pointer: fine)").matches && window.matchMedia("(hover: hover)").matches;
  
 // ===================================================
+// FEEDBACK TÁTIL (haptics) — degrada silenciosamente
+// em navegadores/dispositivos sem suporte (ex.: iOS)
+// ===================================================
+function triggerHaptic(durationMs = 12) {
+    try {
+        if (navigator.vibrate) navigator.vibrate(durationMs);
+    } catch (e) { /* silencioso: haptics é um extra, nunca deve quebrar a UI */ }
+}
+ 
+// ===================================================
+// DESTRAVAR O ÁUDIO NO PRIMEIRO GESTO (iOS/Safari criam
+// o AudioContext em estado "suspended" até haver uma
+// interação explícita do usuário — inclusive um swipe)
+// ===================================================
+function unlockAudioOnFirstGesture() {
+    const unlock = () => {
+        const ctx = getAudioContext();
+        if (ctx && ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+        }
+        document.removeEventListener("touchstart", unlock);
+        document.removeEventListener("click", unlock);
+    };
+    document.addEventListener("touchstart", unlock, { passive: true, once: true });
+    document.addEventListener("click", unlock, { once: true });
+}
+ 
+// ===================================================
 // GERENCIAMENTO DE ÁUDIO (Web Audio API)
 // ===================================================
 function getAudioContext() {
@@ -211,6 +239,7 @@ function openArchiveModal(figurinha) {
     modal.setAttribute("aria-hidden", "false");
     
     playTechClickSound();
+    triggerHaptic(14);
  
     gsap.fromTo(".modal-backdrop", { opacity: 0 }, { opacity: 1, duration: 0.4 });
     gsap.fromTo(".modal-wrapper", 
@@ -301,14 +330,24 @@ async function preencherFigurinhas() {
             slot.setAttribute("aria-label", `Abrir arquivo de ${figurinha.nome}`);
             slot.dataset.figurinha = JSON.stringify(figurinha);
  
+            // Skeleton de carregamento: fica visível (com shimmer, via CSS)
+            // até a imagem terminar de carregar, em vez de deixar o slot
+            // vazio/piscando enquanto a rede mobile busca os dados.
+            const ghost = document.createElement("div");
+            ghost.className = "slot-ghost";
+            slot.insertBefore(ghost, slot.firstChild);
+ 
             const img = document.createElement("img");
             img.src = `${API_BASE_URL}${figurinha.imagem_url}`;
             img.alt = figurinha.nome;
             img.className = "sticker-img";
-            // img.loading = id <= 5 ? "eager" : "lazy";
+            // Os primeiros slots (prováveis de aparecer imediatamente na
+            // primeira página) carregam eager; o resto usa lazy loading
+            // para não competir por banda em conexões móveis lentas.
+            img.loading = id <= 5 ? "eager" : "lazy";
             img.decoding = "async";
  
-            img.onload = () => { slot.classList.add("slot-filled"); };
+            img.onload = () => { slot.classList.add("slot-filled"); triggerHaptic(6); };
             img.onerror = () => { console.warn(`Imagem não encontrada para: ${figurinha.nome}`); };
  
             slot.insertBefore(img, slot.firstChild);
@@ -346,6 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
     updateLocalTimeDisplay();
     window.setInterval(updateLocalTimeDisplay, 1000);
+    unlockAudioOnFirstGesture();
  
     if (typeof gsap !== "undefined" && typeof TextPlugin !== "undefined") {
         gsap.registerPlugin(TextPlugin);
@@ -356,12 +396,31 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.set(bookElement, { opacity: 0, scale: 0.93, rotationX: 7, transformOrigin: "50% 100%" });
     }
  
+    // ==========================================
+    // DICA DE SWIPE (só mobile, só na primeira visita)
+    // ==========================================
+    const showSwipeHintIfNeeded = () => {
+        try {
+            if (window.innerWidth > 767) return;
+            if (localStorage.getItem("gothamSwipeHintShown")) return;
+            if (!bookElement || typeof gsap === "undefined") return;
+ 
+            localStorage.setItem("gothamSwipeHintShown", "1");
+ 
+            gsap.timeline({ delay: 0.4 })
+                .to(bookElement, { x: -18, rotation: -1.2, duration: 0.45, ease: "power2.out" })
+                .to(bookElement, { x: 6, rotation: 0.4, duration: 0.35, ease: "power2.inOut" })
+                .to(bookElement, { x: 0, rotation: 0, duration: 0.4, ease: "power2.out" });
+        } catch (e) { /* localStorage pode falhar em modo privado — a dica é só um extra */ }
+    };
+ 
     let tlIntro = null;
     if (introScreen && typeof gsap !== "undefined") {
         tlIntro = gsap.timeline({
             onComplete: () => {
                 introScreen.classList.add("hidden");
                 introScreen.setAttribute("aria-hidden", "true");
+                showSwipeHintIfNeeded();
             }
         });
  
@@ -375,6 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.setTimeout(() => {
             introScreen.classList.add("hidden");
             introScreen.setAttribute("aria-hidden", "true");
+            showSwipeHintIfNeeded();
         }, 1700);
     }
  
@@ -439,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.4, ease: "power2.out" });
                 document.body.classList.add("hover-btn");
             });
-
+ 
             btn.addEventListener("mouseleave", () => {
                 gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
                 document.body.classList.remove("hover-btn");
@@ -601,9 +661,23 @@ document.addEventListener("DOMContentLoaded", () => {
             btnNext.classList.toggle("hidden", currentPageIndex === totalPages - 1);
         };
  
+        // Indicador "X / Y", visível só no mobile (o CSS cuida do display).
+        // Existe porque, sem a visão de duas páginas do desktop, o usuário
+        // perde a noção de quantas páginas faltam no álbum.
+        const pageIndicatorText = document.getElementById("page-indicator-text");
+        const updatePageIndicator = (currentPageIndex) => {
+            if (!pageIndicatorText) return;
+            const totalPages = pageFlip.getPageCount();
+            pageIndicatorText.textContent = `${currentPageIndex + 1} / ${totalPages}`;
+        };
+ 
         pageFlip.on("flip", (event) => {
             updateNavButtons(event.data);
+            updatePageIndicator(event.data);
+            triggerHaptic(8);
         });
+ 
+        updatePageIndicator(0);
  
         // Vínculo dos botões com stopPropagation para previnir conflitos
         const bindNavButton = (button, action) => {
